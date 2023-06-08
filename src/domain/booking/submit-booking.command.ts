@@ -1,7 +1,7 @@
 import {Command, CommandProps} from '@lib/domain/command';
-import {BookingProps} from './booking.entity';
+import {CreateBooking} from './booking.type';
 
-type SubmitBookingCommandProps = CommandProps<BookingProps>;
+type SubmitBookingCommandProps = CommandProps<CreateBooking>;
 
 export class SubmitBookingCommand extends Command<
   CommandProps<SubmitBookingCommandProps>

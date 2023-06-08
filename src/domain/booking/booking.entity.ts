@@ -5,6 +5,7 @@ import {BookingSubmittedEvent} from './booking-submitted.event';
 import {Room} from './room';
 import {BookingValidatedEvent} from './booking-validated.event';
 import {BookingsDB, updateById} from '@infrastructure/db/booking.db';
+import {CreateBooking} from './booking.type';
 
 export type BookingStatus =
   | 'booked'
@@ -31,9 +32,9 @@ export class BookingEntity extends AggregateRoot<BookingProps> {
 
   public validate(): void {}
 
-  static create(createProps: BookingProps): BookingEntity {
+  static create(createProps: CreateBooking): BookingEntity {
     const id = v4();
-    const props: BookingProps = {...createProps};
+    const props: BookingProps = {...createProps, status: 'booked'};
     const booking = new BookingEntity({id, props});
 
     // Save to database
