@@ -5,19 +5,11 @@
     "baseUrl": ".",
     "outDir": "build",
     "paths": {
-      "@lib/*": [
-        "src/lib/*"
-      ],
-      "@domain/*": [
-        "src/domain/*"
-      ],
-      "@application/*": [
-        "src/application/*"
-      ],
+      "@lib/*": ["src/lib/*"],
+      "@domain/*": ["src/domain/*"],
+      "@application/*": ["src/application/*"],
+      "@infrastructure/*": ["src/infrastructure/*"]
     }
   },
-  "include": [
-    "src/**/*.ts",
-    "test/**/*.ts"
-  ]
+  "include": ["src/**/*.ts", "test/**/*.ts"]
 }
