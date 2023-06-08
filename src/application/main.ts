@@ -2,6 +2,16 @@ import {SubmitBookingCommand} from '@domain/booking/submit-booking.command';
 import {SubmitBookingHandler} from '@domain/booking/submit-booking.handler';
 import {CommandBus} from '@tshio/command-bus';
 import {Room} from '@domain/booking/room';
+import {BookingProps} from '@domain/booking/booking.entity';
+const selectedRoom: Room = new Room({roomName: 'Room 404 (Valaroom)'});
+const booking: BookingProps = {
+  arrivalDate: new Date(0),
+  departureDate: new Date('12-12-2023'),
+  firstName: 'Val',
+  lastName: 'Ario',
+  status: 'booked',
+  room: selectedRoom,
+};
 
 export const main = async (): Promise<void> => {
   const bus = new CommandBus([new SubmitBookingHandler()]);
@@ -12,16 +22,7 @@ export const main = async (): Promise<void> => {
 };
 
 const RoomBookingSubmitUseCase = async (bus: CommandBus): Promise<void> => {
-  const selectedRoom = new Room({roomName: 'Room 404 (Valaroom)'});
-
-  const bookingCommand = new SubmitBookingCommand({
-    arrivalDate: new Date(0),
-    departureDate: new Date('12-12-2023'),
-    firstName: 'Val',
-    lastName: 'Ario',
-    status: 'booked',
-    room: selectedRoom,
-  });
+  const bookingCommand = new SubmitBookingCommand(booking);
   await bus.execute(bookingCommand);
 };
 
