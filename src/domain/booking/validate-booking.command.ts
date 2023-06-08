@@ -1,12 +1,13 @@
 import {Command, CommandProps} from '@lib/domain/command';
+import {BookingProps} from './booking.entity';
 
-type ValidateBookingCommandProps = CommandProps<{id: string}>;
+type ValidateBookingCommandProps = CommandProps<BookingProps>;
 
 export class ValidateBookingCommand extends Command<
   CommandProps<ValidateBookingCommandProps>
 > {
   static readonly type = 'ValidateBookingCommand';
-  constructor(props: ValidateBookingCommandProps) {
-    super('ValidateBookingCommand', props);
+  constructor(booking: ValidateBookingCommandProps) {
+    super('ValidateBookingCommand', booking);
   }
 }

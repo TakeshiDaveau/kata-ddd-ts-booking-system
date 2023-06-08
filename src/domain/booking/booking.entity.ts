@@ -4,8 +4,6 @@ import {v4} from 'uuid';
 import {BookingSubmittedEvent} from './booking-submitted.event';
 import {Room} from './room';
 import {BookingValidatedEvent} from './booking-validated.event';
-import {BookingsDB, updateById} from '@infrastructure/db/booking.db';
-import {CreateBooking} from './booking.type';
 
 export type BookingStatus =
   | 'booked'
@@ -32,15 +30,29 @@ export class BookingEntity extends AggregateRoot<BookingProps> {
 
   public validate(): void {}
 
-  static create(createProps: CreateBooking): BookingEntity {
+  static validateBooking(booking: BookingProps) {
+    const foundBookingEntity = new BookingEntity({
+      id: v4(),
+      props: {...booking, status: 'valid'},
+    });
+
+    foundBookingEntity.addEvent(
+      new BookingValidatedEvent({
+        aggregateId: foundBookingEntity._id,
+        ...foundBookingEntity.props,
+      })
+    );
+
+    return foundBookingEntity;
+  }
+
+  static create(createProps: BookingProps): BookingEntity {
     const id = v4();
-    const props: BookingProps = {...createProps, status: 'booked'};
+    const props: BookingProps = {...createProps};
     const booking = new BookingEntity({id, props});
 
     // Save to database
-    BookingsDB.push(booking);
 
-    // Save the event
     booking.addEvent(
       new BookingSubmittedEvent({
         aggregateId: id,
@@ -48,19 +60,5 @@ export class BookingEntity extends AggregateRoot<BookingProps> {
       })
     );
     return booking;
-  }
-
-  validateBooking(): BookingEntity {
-    this.props.status = 'valid';
-
-    updateById(this.id, this);
-
-    this.addEvent(
-      new BookingValidatedEvent({
-        aggregateId: this.id,
-        ...this.props,
-      })
-    );
-    return this;
   }
 }

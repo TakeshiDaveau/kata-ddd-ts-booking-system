@@ -1,13 +1,13 @@
 import {Command, CommandProps} from '@lib/domain/command';
-import {CreatePayment} from './payment.type';
+import {PaymentProps} from './payment.entity';
 
-type RequestPaymentCommandProps = CommandProps<CreatePayment>;
+type RequestPaymentCommandProps = CommandProps<PaymentProps>;
 
 export class RequestPaymentCommand extends Command<
   CommandProps<RequestPaymentCommandProps>
 > {
   static readonly type = 'RequestPaymentCommand';
-  constructor(props: RequestPaymentCommandProps) {
-    super('RequestPaymentCommand', props);
+  constructor(payment: RequestPaymentCommandProps) {
+    super('RequestPaymentCommand', payment);
   }
 }

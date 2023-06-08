@@ -4,8 +4,12 @@ import {BookingProps} from './booking.entity';
 export class BookingSubmittedEvent extends DomainEvent {
   constructor(props: DomainEventProps<BookingProps>) {
     super(props);
-    // console.log(
-    //   `BookingSubmittedEvent created with value ${JSON.stringify(this)}`
-    // );
+    console.log(
+      `BookingSubmittedEvent created with value ${JSON.stringify(
+        this,
+        null,
+        2
+      )}`
+    );
   }
 }

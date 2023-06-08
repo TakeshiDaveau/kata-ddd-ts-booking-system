@@ -3,51 +3,38 @@ import {SubmitBookingHandler} from '@domain/booking/submit-booking.handler';
 import {CommandBus} from '@tshio/command-bus';
 import {Room} from '@domain/booking/room';
 import {BookingProps} from '@domain/booking/booking.entity';
-import {ValidateBookingHandler} from '@domain/booking/validate-booking.handler';
 import {ValidateBookingCommand} from '@domain/booking/validate-booking.command';
-import {RequestPaymentHandler} from '@domain/payment/request-payment.handler';
-import {CreateBooking} from '@domain/booking/booking.type';
-import {CreatePayment} from '@domain/payment/payment.type';
-import {RequestPaymentCommand} from '@domain/payment/request-payment.command';
-
+import {ValidateBookingHandler} from '@domain/booking/validate-booking.handler';
 const selectedRoom: Room = new Room({roomName: 'Room 404 (Valaroom)'});
-const booking: CreateBooking = {
+const booking: BookingProps = {
   arrivalDate: new Date(0),
   departureDate: new Date('12-12-2023'),
   firstName: 'Val',
   lastName: 'Ario',
+  status: 'booked',
   room: selectedRoom,
-};
-
-const payment: Omit<CreatePayment, 'bookingId'> = {
-  amount: 9990,
-  currency: '$',
 };
 
 export const main = async (): Promise<void> => {
   const bus = new CommandBus([
     new SubmitBookingHandler(),
     new ValidateBookingHandler(),
-    new RequestPaymentHandler(),
   ]);
 
-  const bookingId = await RoomBookingSubmitUseCase(bus);
+  await RoomBookingSubmitUseCase(bus);
 
-  await RoomBookingValidateUseCase(bus, bookingId);
+  await RoomBookingValidateUseCase(bus);
 };
 
-const RoomBookingSubmitUseCase = async (bus: CommandBus): Promise<string> => {
+const RoomBookingSubmitUseCase = async (bus: CommandBus): Promise<void> => {
   const bookingCommand = new SubmitBookingCommand(booking);
-  return await bus.execute(bookingCommand);
+  await bus.execute(bookingCommand);
 };
 
-const RoomBookingValidateUseCase = async (
-  bus: CommandBus,
-  id: string
-): Promise<void> => {
-  const firstCommand = new ValidateBookingCommand({id});
-  await bus.execute(firstCommand);
+const RoomBookingValidateUseCase = async (bus: CommandBus): Promise<void> => {
+  const validateBookingCommand = new ValidateBookingCommand(booking);
+  await bus.execute(validateBookingCommand);
 
-  const secondCommand = new RequestPaymentCommand({...payment, bookingId: id});
-  await bus.execute(secondCommand);
+  // const requestPaymentCommand = new RequestPaymentCommand(payment);
+  // await bus.execute(requestPaymentCommand);
 };
