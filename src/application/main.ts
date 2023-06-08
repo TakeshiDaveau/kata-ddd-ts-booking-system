@@ -3,6 +3,9 @@ import {SubmitBookingHandler} from '@domain/booking/submit-booking.handler';
 import {CommandBus} from '@tshio/command-bus';
 import {Room} from '@domain/booking/room';
 import {BookingProps} from '@domain/booking/booking.entity';
+import {BookingsDB} from '@infrastructure/db/booking.db';
+import {ValidateBookingHandler} from '@domain/booking/validate-booking.handler';
+import {ValidateBookingCommand} from '@domain/booking/validate-booking.command';
 const selectedRoom: Room = new Room({roomName: 'Room 404 (Valaroom)'});
 const booking: BookingProps = {
   arrivalDate: new Date(0),
@@ -14,18 +17,25 @@ const booking: BookingProps = {
 };
 
 export const main = async (): Promise<void> => {
-  const bus = new CommandBus([new SubmitBookingHandler()]);
+  const bus = new CommandBus([
+    new SubmitBookingHandler(),
+    new ValidateBookingHandler(),
+  ]);
 
-  await RoomBookingSubmitUseCase(bus);
+  const bookingId = await RoomBookingSubmitUseCase(bus);
 
-  await RoomBookingValidateUseCase(bus);
+  await RoomBookingValidateUseCase(bus, bookingId);
 };
 
-const RoomBookingSubmitUseCase = async (bus: CommandBus): Promise<void> => {
+const RoomBookingSubmitUseCase = async (bus: CommandBus): Promise<string> => {
   const bookingCommand = new SubmitBookingCommand(booking);
-  await bus.execute(bookingCommand);
+  return await bus.execute(bookingCommand);
 };
 
-const RoomBookingValidateUseCase = async (bus: CommandBus): Promise<void> => {
-  // await bus.execute(bookingCommand);
+const RoomBookingValidateUseCase = async (
+  bus: CommandBus,
+  id: string
+): Promise<void> => {
+  const firstCommand = new ValidateBookingCommand({id});
+  await bus.execute(firstCommand);
 };
