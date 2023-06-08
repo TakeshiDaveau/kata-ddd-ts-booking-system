@@ -3,15 +3,16 @@ import {AggregateRoot} from '@lib/domain/aggregate-root';
 import {AggregateId} from '@lib/types/aggregate-id';
 import {v4} from 'uuid';
 import {PaymentRequestedEvent} from './payment-requested.event';
+import {CreatePayment} from './payment.type';
 
 export type PaymentStatus = 'pending' | 'valid';
-export const isPaymentStatus = (value: unknown): value is PaymentStatus => {
+
+export type Amount = number;
+export const isAmount = (value: unknown): value is Amount => {
   return (
     typeof value === 'number' && value > 0 && value <= Number.MAX_SAFE_INTEGER
   );
 };
-
-export type Amount = number;
 export type Currency = '$' | '€' | '£';
 
 export interface PaymentProps {
@@ -29,7 +30,7 @@ export class PaymentEntity extends AggregateRoot<PaymentProps> {
 
   public validate(): void {}
 
-  static create(createProps: Omit<PaymentProps, 'status'>): PaymentEntity {
+  static create(createProps: CreatePayment): PaymentEntity {
     const id = v4();
     const props: PaymentProps = {...createProps, status: 'pending'};
     const payment = new PaymentEntity({id, props});
