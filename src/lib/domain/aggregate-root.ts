@@ -18,7 +18,13 @@ export abstract class AggregateRoot<T> extends Entity<T> {
 
   public async publishEvents(): Promise<void> {
     this._domainEvents.forEach(event =>
-      console.log(`Events published : ${JSON.stringify(event)}`)
+      console.log(
+        `Events ${event.constructor.name}published\n${JSON.stringify(
+          event,
+          null,
+          2
+        )}\n`
+      )
     );
 
     this.clearEvents();
