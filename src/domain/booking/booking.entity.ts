@@ -2,9 +2,23 @@ import {AggregateRoot} from '@lib/domain/aggregate-root';
 import {AggregateId} from '@lib/types/aggregate-id';
 import {v4} from 'uuid';
 import {BookingSubmittedEvent} from './booking-submitted.event';
+import {Room} from './room';
+
+export type BookingStatus =
+  | 'booked'
+  | 'pending'
+  | 'valid'
+  | 'checkin'
+  | 'checkout'
+  | 'closed';
 
 export interface BookingProps {
-  roomName: string;
+  status: BookingStatus;
+  room: Room;
+  arrivalDate: Date;
+  departureDate: Date;
+  firstName: string;
+  lastName: string;
 }
 
 export class BookingEntity extends AggregateRoot<BookingProps> {
@@ -19,6 +33,8 @@ export class BookingEntity extends AggregateRoot<BookingProps> {
     const id = v4();
     const props: BookingProps = {...createProps};
     const booking = new BookingEntity({id, props});
+
+    // Save to database
 
     booking.addEvent(
       new BookingSubmittedEvent({

@@ -8,7 +8,7 @@ export class SubmitBookingHandler
   public commandType = SubmitBookingCommand.type;
 
   async execute(command: SubmitBookingCommand): Promise<void> {
-    // Thing todo
-    BookingEntity.create(command.payload);
+    const booking = BookingEntity.create(command.payload);
+    booking.publishEvents();
   }
 }

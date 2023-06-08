@@ -6,7 +6,7 @@ type SubmitBookingCommandProps = CommandProps<BookingProps>;
 export class SubmitBookingCommand extends Command<
   CommandProps<SubmitBookingCommandProps>
 > {
-  static type = 'SubmitBookingCommand';
+  static readonly type = 'SubmitBookingCommand';
   constructor(props: SubmitBookingCommandProps) {
     super('SubmitBookingCommand', props);
   }

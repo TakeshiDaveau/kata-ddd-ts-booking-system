@@ -19,6 +19,13 @@ export abstract class ValueObject<T> {
   }
 
   /**
+   * Unpack a value object to get its raw properties
+   */
+  public unpack(): T {
+    return Object.freeze({...this.props});
+  }
+
+  /**
    *  Check if two Value Objects are equal. Checks structural equality.
    * @param vo ValueObject
    */

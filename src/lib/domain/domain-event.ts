@@ -12,6 +12,8 @@ export abstract class DomainEvent {
   /** Aggregate ID where domain event occurred */
   public readonly aggregateId: string;
 
+  public readonly payload: DomainEventProps<unknown>;
+
   constructor(props: DomainEventProps<unknown>) {
     if (isEmpty(props)) {
       throw new ArgumentNotProvidedException(
@@ -20,5 +22,6 @@ export abstract class DomainEvent {
     }
     this.eventId = v4();
     this.aggregateId = props.aggregateId;
+    this.payload = props;
   }
 }
