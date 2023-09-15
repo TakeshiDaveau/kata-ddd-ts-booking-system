@@ -1,5 +1,5 @@
-import {ExceptionBase} from './exception.base';
-import {ExceptionCode} from './exception.code';
+import { ExceptionBase } from './exception.base';
+import { ExceptionCode } from './exception.code';
 
 /**
  * Used to indicate that the entity you're looking for doesn't exist

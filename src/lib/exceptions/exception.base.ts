@@ -34,7 +34,7 @@ export abstract class ExceptionBase extends Error {
   constructor(
     readonly message: string,
     readonly cause?: Error,
-    readonly metadata?: unknown
+    readonly metadata?: unknown,
   ) {
     super(message);
     Error.captureStackTrace(this, this.constructor);

@@ -1,5 +1,5 @@
-import {ExceptionBase} from './exception.base';
-import {ExceptionCode} from './exception.code';
+import { ExceptionBase } from './exception.base';
+import { ExceptionCode } from './exception.code';
 
 /**
  * Used to indicate that an argument was not provided (is empty object/array, null of undefined).

@@ -1,7 +1,7 @@
-import {ValueObject} from '@lib/domain/value-object';
-import {ArgumentInvalidException} from '@lib/exceptions/argument-invalid.exception';
-import {ArgumentNotProvidedException} from '@lib/exceptions/argument-not-provided.exception';
-import {isEmpty} from '@lib/guard/is-empty';
+import { ValueObject } from '@lib/domain/value-object';
+import { ArgumentInvalidException } from '@lib/exceptions/argument-invalid.exception';
+import { ArgumentNotProvidedException } from '@lib/exceptions/argument-not-provided.exception';
+import { isEmpty } from '@lib/guard/is-empty';
 
 export type RoomName = string;
 

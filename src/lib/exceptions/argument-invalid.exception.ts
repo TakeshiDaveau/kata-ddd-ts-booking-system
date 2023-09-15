@@ -1,5 +1,5 @@
-import {ExceptionBase} from './exception.base';
-import {ExceptionCode} from './exception.code';
+import { ExceptionBase } from './exception.base';
+import { ExceptionCode } from './exception.code';
 
 /**
  * Used to indicate that an incorrect argument was provided to a method/function/class constructor

@@ -1,11 +1,10 @@
-import {AggregateRoot} from '@lib/domain/aggregate-root';
-import {AggregateId} from '@lib/types/aggregate-id';
-import {v4} from 'uuid';
-import {BookingSubmittedEvent} from './booking-submitted.event';
-import {Room} from './room';
-import {BookingValidatedEvent} from './booking-validated.event';
-import {BookingsDB, updateById} from '@infrastructure/db/booking.db';
-import {CreateBooking} from './booking.type';
+import { AggregateRoot } from '@lib/domain/aggregate-root';
+import { AggregateId } from '@lib/types/aggregate-id';
+import { v4 } from 'uuid';
+import { BookingSubmittedEvent } from './submit/booking-submitted.event';
+import { Room } from './room';
+import { BookingValidatedEvent } from './validate/booking-validated.event';
+import { CreateBooking } from './booking.type';
 
 export type BookingStatus =
   | 'booked'
@@ -30,37 +29,35 @@ export class BookingEntity extends AggregateRoot<BookingProps> {
   // @ts-ignore
   protected readonly _id: AggregateId;
 
-  public validate(): void {}
+  public validate(): void {
+    return;
+  }
 
   static create(createProps: CreateBooking): BookingEntity {
     const id = v4();
-    const props: BookingProps = {...createProps, status: 'booked'};
-    const booking = new BookingEntity({id, props});
+    const props: BookingProps = { ...createProps, status: 'booked' };
+    return new BookingEntity({ id, props });
+  }
 
-    // Save to database
-    BookingsDB.push(booking);
-
-    // Save the event
-    booking.addEvent(
+  submitBooking(): BookingEntity {
+    this.apply(
       new BookingSubmittedEvent({
-        aggregateId: id,
-        ...props,
+        aggregateId: this.id,
+        ...this.props,
       })
     );
-    return booking;
+    return this;
   }
 
   validateBooking(): BookingEntity {
     this.props.status = 'valid';
-
-    updateById(this.id, this);
-
-    this.addEvent(
+    this.apply(
       new BookingValidatedEvent({
         aggregateId: this.id,
         ...this.props,
       })
     );
+
     return this;
   }
 }

@@ -1,3 +1,3 @@
-import {BookingProps} from './booking.entity';
+import { BookingProps } from './booking.entity';
 
 export type CreateBooking = Omit<BookingProps, 'status'>;

@@ -1,5 +1,5 @@
-import {ArgumentNotProvidedException} from '../exceptions/argument-not-provided.exception';
-import {isEmpty} from '../guard/is-empty';
+import { ArgumentNotProvidedException } from '../exceptions/argument-not-provided.exception';
+import { isEmpty } from '../guard/is-empty';
 
 type ValueObjectProps<T> = T;
 
@@ -22,7 +22,7 @@ export abstract class ValueObject<T> {
    * Unpack a value object to get its raw properties
    */
   public unpack(): T {
-    return Object.freeze({...this.props});
+    return Object.freeze({ ...this.props });
   }
 
   /**

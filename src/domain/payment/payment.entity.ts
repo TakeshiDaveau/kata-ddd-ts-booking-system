@@ -1,9 +1,8 @@
-import {save} from '@infrastructure/db/payment.db';
-import {AggregateRoot} from '@lib/domain/aggregate-root';
-import {AggregateId} from '@lib/types/aggregate-id';
-import {v4} from 'uuid';
-import {PaymentRequestedEvent} from './payment-requested.event';
-import {CreatePayment} from './payment.type';
+import { AggregateRoot } from '@lib/domain/aggregate-root';
+import { AggregateId } from '@lib/types/aggregate-id';
+import { v4 } from 'uuid';
+import { CreatePayment } from './payment.type';
+import { PaymentRequestedEvent } from './request/payment-requested.event';
 
 export type PaymentStatus = 'pending' | 'valid';
 
@@ -28,23 +27,23 @@ export class PaymentEntity extends AggregateRoot<PaymentProps> {
   // @ts-ignore
   protected readonly _id: AggregateId;
 
-  public validate(): void {}
+  public validate(): void {
+
+  }
 
   static create(createProps: CreatePayment): PaymentEntity {
     const id = v4();
-    const props: PaymentProps = {...createProps, status: 'pending'};
-    const payment = new PaymentEntity({id, props});
+    const props: PaymentProps = { ...createProps, status: 'pending' };
+    return new PaymentEntity({ id, props });   // Save to database
+  }
 
-    // Save to database
-    save(payment);
-
-    // Save the event
-    payment.addEvent(
+  submitPaymentRequest(): PaymentEntity {
+    this.apply(
       new PaymentRequestedEvent({
-        aggregateId: id,
-        ...props,
+        aggregateId: this.id,
+        ...this.props,
       })
     );
-    return payment;
+    return this;
   }
 }

@@ -1,25 +1,17 @@
-import {isEmpty} from '@lib/guard/is-empty';
-import {ArgumentNotProvidedException} from '@lib/exceptions/argument-not-provided.exception';
-import {Command as AbstractCommand} from '@tshio/command-bus';
+import { isEmpty } from '@lib/guard/is-empty';
+import { ArgumentNotProvidedException } from '@lib/exceptions/argument-not-provided.exception';
 
 export type CommandProps<T> = T;
 
-export class Command<T> implements AbstractCommand<T> {
-  readonly type: string;
+export class Command<T> {
   readonly payload: T;
 
-  constructor(type: string, props: T) {
-    if (isEmpty(type)) {
-      throw new ArgumentNotProvidedException(
-        'Command type should not be empty'
-      );
-    }
+  constructor(props: T) {
     if (isEmpty(props)) {
       throw new ArgumentNotProvidedException(
-        'Command props should not be empty'
+        'Command props should not be empty',
       );
     }
-    this.type = type;
     this.payload = props;
   }
 }

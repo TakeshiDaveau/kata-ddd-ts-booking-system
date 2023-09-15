@@ -15,7 +15,7 @@ export const isEmpty = (value: unknown): boolean => {
     if (value.length === 0) {
       return true;
     }
-    if (value.every(item => isEmpty(item))) {
+    if (value.every((item) => isEmpty(item))) {
       return true;
     }
   }
