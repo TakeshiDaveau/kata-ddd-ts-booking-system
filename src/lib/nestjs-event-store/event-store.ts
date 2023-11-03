@@ -3,6 +3,7 @@ import {
   EventStoreDBClient,
   jsonEvent,
   persistentSubscriptionToStreamSettingsFromDefaults,
+  PersistentSubscriptionToStreamInfo,
 } from '@eventstore/db-client';
 import {
   EventBus,
@@ -77,11 +78,22 @@ export class EventStore
        Connecting to persistent subscription ${subscriptionName} on stream ${stream}!
       `);
 
-      await this.client.createPersistentSubscriptionToStream(
-        stream,
-        subscriptionName,
-        persistentSubscriptionToStreamSettingsFromDefaults(),
-      );
+      try {
+        const persistentSubscription: PersistentSubscriptionToStreamInfo =
+          await this.client.getPersistentSubscriptionToStreamInfo(
+            stream,
+            subscriptionName,
+          );
+      } catch (error) {
+        await this.client.createPersistentSubscriptionToStream(
+          stream,
+          subscriptionName,
+          persistentSubscriptionToStreamSettingsFromDefaults(),
+        );
+        console.log(
+          `Persistent subscription ${stream} for group ${subscriptionName} has been created`,
+        );
+      }
 
       const subscription =
         await this.client.subscribeToPersistentSubscriptionToStream(
