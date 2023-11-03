@@ -36,7 +36,7 @@ export class BookingEntity extends AggregateRoot<BookingProps> {
   static create(createProps: CreateBooking): BookingEntity {
     const id = v4();
     const props: BookingProps = { ...createProps, status: 'booked' };
-    return new BookingEntity({ id, props });
+    return new BookingEntity(`booking_${id}`, { id, props });
   }
 
   submitBooking(): BookingEntity {

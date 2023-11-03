@@ -15,7 +15,7 @@ export class RequestPaymentHandler
     save(payment);
 
     payment.submitPaymentRequest();
-    payment.commit();
+    // payment.commit();
     return payment.id;
   }
 }

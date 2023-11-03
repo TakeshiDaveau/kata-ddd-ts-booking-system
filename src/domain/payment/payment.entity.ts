@@ -34,7 +34,7 @@ export class PaymentEntity extends AggregateRoot<PaymentProps> {
   static create(createProps: CreatePayment): PaymentEntity {
     const id = v4();
     const props: PaymentProps = { ...createProps, status: 'pending' };
-    return new PaymentEntity({ id, props });   // Save to database
+    return new PaymentEntity(`payment_${id}`, { id, props });   // Save to database
   }
 
   submitPaymentRequest(): PaymentEntity {

@@ -21,7 +21,7 @@ export class ValidateBookingHandler
 
     const booking = this.publisher.mergeObjectContext<BookingEntity>(bookingToValidate);
     booking.validateBooking();
-    booking.commit();
+    // booking.commit();
 
     updateById(booking.id, booking);
 

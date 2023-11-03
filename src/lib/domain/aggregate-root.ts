@@ -18,8 +18,9 @@ export interface CreateEntityProps<T> {
 }
 
 export abstract class AggregateRoot<T> extends NestAggregateRoot {
-  constructor({ id, createdAt, updatedAt, props }: CreateEntityProps<T>) {
+  constructor(public readonly streamName: string, { id, createdAt, updatedAt, props }: CreateEntityProps<T>) {
     super();
+    this.autoCommit = true;
     this.setId(id);
     this.validateProps(props);
     const now = new Date();
