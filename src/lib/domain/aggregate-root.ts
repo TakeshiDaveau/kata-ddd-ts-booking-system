@@ -3,6 +3,7 @@ import { AggregateId } from '@lib/types/aggregate-id';
 import { ArgumentNotProvidedException } from '@lib/exceptions/argument-not-provided.exception';
 import { ArgumentInvalidException } from '@lib/exceptions/argument-invalid.exception';
 import { isEmpty } from '@lib/guard/is-empty';
+import { DomainEvent } from './domain-event';
 
 export interface BaseEntityProps {
   id: AggregateId;
@@ -18,19 +19,22 @@ export interface CreateEntityProps<T> {
 }
 
 export abstract class AggregateRoot<T> extends NestAggregateRoot {
-  constructor(public readonly streamName: string, { id, createdAt, updatedAt, props }: CreateEntityProps<T>) {
+  private readonly changes: DomainEvent[] = []
+  version: number = -1;
+
+  constructor(public readonly streamName: string, id: string) {
     super();
     this.autoCommit = true;
     this.setId(id);
-    this.validateProps(props);
+    // this.validateProps(props);
     const now = new Date();
-    this._createdAt = createdAt || now;
-    this._updatedAt = updatedAt || now;
-    this.props = props;
-    this.validate();
+    this._createdAt = now;
+    this._updatedAt = now;
+    // this.props = props;
+    // this.validate();
   }
 
-  protected readonly props: T;
+  protected props: T;
 
   /**
    * ID is set in the concrete entity implementation to support
@@ -64,6 +68,15 @@ export abstract class AggregateRoot<T> extends NestAggregateRoot {
 
   static isEntity(entity: unknown): entity is AggregateRoot<unknown> {
     return entity instanceof AggregateRoot;
+  }
+
+  protected abstract applyChange<T extends DomainEvent>(event: T, isFromHistory?: boolean): void;
+
+  public loadFromHistory(history: DomainEvent[]): void {
+    history.forEach((event) => {
+      this.applyChange(event, true);
+      this.version++;
+    })
   }
 
   /**

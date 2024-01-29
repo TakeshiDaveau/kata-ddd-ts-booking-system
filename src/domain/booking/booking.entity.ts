@@ -5,6 +5,8 @@ import { BookingSubmittedEvent } from './submit/booking-submitted.event';
 import { Room } from './room';
 import { BookingValidatedEvent } from './validate/booking-validated.event';
 import { CreateBooking } from './booking.type';
+import { DomainEvent } from '../../lib/domain/domain-event';
+import { IEvent } from '@nestjs/cqrs';
 
 export type BookingStatus =
   | 'booked'
@@ -15,6 +17,7 @@ export type BookingStatus =
   | 'closed';
 
 export interface BookingProps {
+  bookingId: string
   status: BookingStatus;
   room: Room;
   arrivalDate: Date;
@@ -24,6 +27,7 @@ export interface BookingProps {
 }
 
 export class BookingEntity extends AggregateRoot<BookingProps> {
+  
   // Ce _id est setté dans le constructeur d'une entity
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -33,31 +37,56 @@ export class BookingEntity extends AggregateRoot<BookingProps> {
     return;
   }
 
-  static create(createProps: CreateBooking): BookingEntity {
-    const id = v4();
-    const props: BookingProps = { ...createProps, status: 'booked' };
-    return new BookingEntity(`booking_${id}`, { id, props });
+  static createEmpty(id: AggregateId): BookingEntity {
+    return new BookingEntity(BookingEntity.getStreamName(id), id);
   }
 
-  submitBooking(): BookingEntity {
-    this.apply(
+  static getStreamName(id: string): string {
+    return `BookingEntity_${id}`
+  }
+
+  submitBooking(booking: BookingProps): void {
+    this.applyChange<BookingSubmittedEvent>(
       new BookingSubmittedEvent({
         aggregateId: this.id,
-        ...this.props,
+        ...booking,
       })
     );
-    return this;
   }
 
-  validateBooking(): BookingEntity {
+  validateBooking(): void {
     this.props.status = 'valid';
-    this.apply(
+    this.applyChange<BookingValidatedEvent>(
       new BookingValidatedEvent({
         aggregateId: this.id,
         ...this.props,
       })
     );
+  }
 
-    return this;
+  protected applyChange<T extends DomainEvent>(event: T, isFromHistory: boolean = false): void {
+    const eventType = event.constructor.name;
+    const payload: any = (event as any).payload as any ?? (event as any).props as any
+    console.log(event, eventType, payload);
+    
+    if(!this.props) {
+      this.props = {} as any;
+    }
+    switch (eventType) {
+      case 'BookingSubmittedEvent':
+        this.props.bookingId = payload.bookingId;
+        this.props.room = payload.room;
+        this.props.status = payload.status;
+        this.props.arrivalDate = payload.arrivalDate;
+        this.props.departureDate = payload.departureDate;
+        this.props.firstName = payload.firstName;
+        this.props.lastName = payload.lastName;
+        break;
+      case 'BookingValidatedEvent':
+        this.props.bookingId = payload.bookingId
+        this.props.status = payload.status
+        break;
+    }
+    super.apply(event, {fromHistory: isFromHistory, skipHandler: false})
   }
 }

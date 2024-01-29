@@ -4,6 +4,7 @@ import {
   jsonEvent,
   persistentSubscriptionToStreamSettingsFromDefaults,
   PersistentSubscriptionToStreamInfo,
+  StreamNotFoundError,
 } from '@eventstore/db-client';
 import {
   EventBus,
@@ -41,6 +42,7 @@ export class EventStore
     event: TEvent,
     context: AggregateRoot<unknown>,
   ) {
+    console.log('In Publish')
     if (isUndefined(event) && isUndefined(context)) {
       return;
     }
@@ -65,8 +67,29 @@ export class EventStore
     this.subject$ = subject;
   }
 
+  public async readAllFromStream(streamName: string): Promise<any[]> {
+    const events = this.client.readStream(streamName, { direction: 'forwards', resolveLinkTos: true }) 
+    const _ = []
+    try {
+      for await (const event of events) {
+        if (!isUndefined(event.event)) {
+          _.push(event.event)
+        }
+      }
+      return _;
+    } catch (error) {
+      if (error instanceof StreamNotFoundError) {
+        return [];
+      }
+      throw error;
+    }
+  }
+
   private handleEvent(event: any) {
     // TODO
+    console.log(event)
+    const rawData = JSON.parse(event.data);
+    const data = Object.values(rawData);
   }
 
   private async subscribeToPersistentSubscription(
@@ -88,7 +111,7 @@ export class EventStore
         await this.client.createPersistentSubscriptionToStream(
           stream,
           subscriptionName,
-          persistentSubscriptionToStreamSettingsFromDefaults(),
+          persistentSubscriptionToStreamSettingsFromDefaults({resolveLinkTos: true}),
         );
         console.log(
           `Persistent subscription ${stream} for group ${subscriptionName} has been created`,

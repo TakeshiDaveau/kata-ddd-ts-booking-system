@@ -3,6 +3,7 @@ import { AggregateId } from '@lib/types/aggregate-id';
 import { v4 } from 'uuid';
 import { CreatePayment } from './payment.type';
 import { PaymentRequestedEvent } from './request/payment-requested.event';
+import { DomainEvent } from '../../lib/domain/domain-event';
 
 export type PaymentStatus = 'pending' | 'valid';
 
@@ -22,6 +23,9 @@ export interface PaymentProps {
 }
 
 export class PaymentEntity extends AggregateRoot<PaymentProps> {
+  protected applyChange(event: DomainEvent): void {
+    throw new Error('Method not implemented.');
+  }
   // Ce _id est setté dans le constructeur d'une entity
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -29,12 +33,6 @@ export class PaymentEntity extends AggregateRoot<PaymentProps> {
 
   public validate(): void {
 
-  }
-
-  static create(createProps: CreatePayment): PaymentEntity {
-    const id = v4();
-    const props: PaymentProps = { ...createProps, status: 'pending' };
-    return new PaymentEntity(`payment_${id}`, { id, props });   // Save to database
   }
 
   submitPaymentRequest(): PaymentEntity {

@@ -9,13 +9,13 @@ export class RequestPaymentHandler
 {
   constructor(private publisher: EventPublisher) {}
 
-  async execute(command: RequestPaymentCommand): Promise<string> {
-    const payment = this.publisher.mergeObjectContext<PaymentEntity>(PaymentEntity.create(command.payload));
+  async execute(command: RequestPaymentCommand): Promise<void> {
+    // const payment = this.publisher.mergeObjectContext<PaymentEntity>(PaymentEntity.create(command.payload));
 
-    save(payment);
+    // // save(payment);
 
-    payment.submitPaymentRequest();
-    // payment.commit();
-    return payment.id;
+    // payment.submitPaymentRequest();
+    // // payment.commit();
+    // return payment.id;
   }
 }
